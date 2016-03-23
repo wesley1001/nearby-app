@@ -1,32 +1,27 @@
-import React, { Component, PropTypes, ListView } from 'react-native';
+import React, { Component, View } from 'react-native';
+import { DragableListContainer } from '../containers';
 import OrderListItem from './OrderListItem';
 
 class OrderList extends Component {
-	constructor(props) {
-		super(props);
-		this.state = this.onOrderChanges(props.orders);
-	}
-	componentWillReceiveProps(nextProps) {
-			if (this.props.orders !== nextProps.orders) {
-				this.setState(this.onOrderChanges(nextProps.orders));
-			}
-	}
-	onOrderChanges(newOrders) {
-		const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-		return {
-			dataSource: ds.cloneWithRows(newOrders)
-		};
-	}
 	render() {
 		return (
-			<ListView dataSource={this.state.dataSource}
-				renderRow={(data) => <OrderListItem {...data}/>}/>
+			<DragableListContainer stateKey='shops' renderRow={this.renderRow}
+				onRefresh={this.onRefresh.bind(this)} onLoadMore={this.onLoadMore.bind(this)}/>
 		);
 	}
+	renderRow(order) {
+		return (
+			<OrderListItem {...order} onPress={() => console.log(order)}/>
+		);
+	}
+	onRefresh() {
+		const { onRefresh, token, params } = this.props;
+		onRefresh(token, params);
+	}
+	onLoadMore() {
+		const { onLoadMore, token, params } = this.props;
+		onLoadMore(token, params);
+	}
 }
-
-OrderList.propTypes = {
-	orders: PropTypes.arrayOf(OrderListItem.propTypes).isRequired
-};
 
 export default OrderList;

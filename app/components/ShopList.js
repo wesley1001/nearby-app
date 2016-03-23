@@ -1,25 +1,27 @@
-import React, { Component, PropTypes, View, ListView, ProgressBarAndroid } from 'react-native';
-import { RefreshMoreList } from '../widgets';
+import React, { Component, View } from 'react-native';
+import { DragableListContainer } from '../containers';
 import ShopListItem from './ShopListItem';
 
-let ShopList = ({shopList, onRefreshShops, onLoadMoreShops, onItemClicked, ...otherProps}) => (
-	<RefreshMoreList {...otherProps}
-		datas={shopList.data}
-		size={shopList.size}
-		offset={shopList.offset}
-		loading={shopList.loading}
-		refreshing={shopList.refreshing}
-		renderRow={shop => <ShopListItem {...shop} onPress={() => onItemClicked(shop)}/>}
-		onRefreshData={() => onRefreshShops(shopList.size, shopList.distance)}
-		onLoadMoreData={() => onLoadMoreShops(shopList.offset, shopList.size, shopList.distance)}/>
-);
-
-ShopList.propTypes = {
-	shopList: PropTypes.object.isRequired,
-	onRefreshShops: PropTypes.func.isRequired,
-	onLoadMoreShops: PropTypes.func.isRequired,
-	onItemClicked: PropTypes.func.isRequired
-};
+class ShopList extends Component {
+	render() {
+		return (
+			<DragableListContainer stateKey='shops' renderRow={this.renderRow}
+				onRefresh={this.onRefresh.bind(this)} onLoadMore={this.onLoadMore.bind(this)}/>
+		);
+	}
+	renderRow(shop) {
+		return (
+			<ShopListItem {...shop} onPress={() => console.log(shop)}/>
+		);
+	}
+	onRefresh() {
+		const { onRefresh, token, params } = this.props;
+		onRefresh(token, params);
+	}
+	onLoadMore() {
+		const { onLoadMore, token, params } = this.props;
+		onLoadMore(token, params);
+	}
+}
 
 export default ShopList;
-

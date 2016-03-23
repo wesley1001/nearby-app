@@ -1,13 +1,15 @@
 import React, { Component, PropTypes, StyleSheet, View, ListView, ScrollView, RefreshControl } from 'react-native';
 import ListLoadingItem from './ListLoadingItem';
 
-class RefreshMoreList extends Component {
+class DragableList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = this.onListDataChanged(props.datas);
 	}
 	componentDidMount() {
-		this.props.onRefreshData();
+		if (this.props.datas.length === 0) {
+			this.props.onRefresh();
+		}
 	}
 	componentWillReceiveProps(nextProps) {
 			if (this.props.datas !== nextProps.datas) {
@@ -15,13 +17,13 @@ class RefreshMoreList extends Component {
 			}
 	}
 	render() {
-		const {refreshing, loading, renderRow, onLoadMoreData, onRefreshData, ...otherProps} = this.props;
+		const {refreshing, loading, renderRow, onLoadMore, onRefresh, ...otherProps} = this.props;
 		return (
 			<RefreshControl style={styles.container} refreshing={refreshing}
-				onRefresh={onRefreshData} colors={['white', 'white', 'white']}
+				onRefresh={onRefresh} colors={['white', 'white', 'white']}
         progressBackgroundColor={'aquamarine'}>
 				<ListView dataSource={this.state.dataSource}
-					onEndReached={() => !loading&&onLoadMoreData()}
+					onEndReached={() => !loading&&onLoadMore()}
 					onEndReachedThreshold={50}
 					renderFooter={() => loading&&<ListLoadingItem/>}
 					renderRow={renderRow} {...otherProps}/>
@@ -36,13 +38,13 @@ class RefreshMoreList extends Component {
 	}
 }
 
-RefreshMoreList.propTypes = {
-	renderRow: PropTypes.func.isRequired,
-	onLoadMoreData: PropTypes.func,
-	onRefreshData: PropTypes.func,
-	datas: PropTypes.arrayOf(PropTypes.object),
+DragableList.propTypes = {
+	datas: PropTypes.arrayOf(PropTypes.object).isRequired,
 	refreshing: PropTypes.bool,
-	loading: PropTypes.bool
+	loading: PropTypes.bool,
+	renderRow: PropTypes.func.isRequired,
+	onLoadMore: PropTypes.func,
+	onRefresh: PropTypes.func
 };
 
 const styles = StyleSheet.create({
@@ -54,4 +56,4 @@ const styles = StyleSheet.create({
 	}
 });
 
-export default RefreshMoreList;
+export default DragableList;
