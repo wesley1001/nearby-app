@@ -1,5 +1,6 @@
 import React, { Component, PropTypes, StyleSheet, View, ListView, ScrollView, RefreshControl } from 'react-native';
 import ListLoadingItem from './ListLoadingItem';
+import ProgressWrapper from './ProgressWrapper';
 
 class DragableList extends Component {
 	constructor(props) {
@@ -7,7 +8,7 @@ class DragableList extends Component {
 		this.state = this.onListDataChanged(props.datas);
 	}
 	componentDidMount() {
-		if (this.props.datas.length === 0) {
+		if (!this.props.datas) {
 			this.props.onRefresh();
 		}
 	}
@@ -17,17 +18,20 @@ class DragableList extends Component {
 			}
 	}
 	render() {
-		const {refreshing, loading, renderRow, onLoadMore, onRefresh, ...otherProps} = this.props;
+		const {datas, refreshing, loading, onLoadMore, onRefresh, ...props} = this.props;
+
 		return (
-			<RefreshControl style={styles.container} refreshing={refreshing}
-				onRefresh={onRefresh} colors={['white', 'white', 'white']}
-        progressBackgroundColor={'aquamarine'}>
-				<ListView dataSource={this.state.dataSource}
-					onEndReached={() => !loading&&onLoadMore()}
-					onEndReachedThreshold={50}
-					renderFooter={() => loading&&<ListLoadingItem/>}
-					renderRow={renderRow} {...otherProps}/>
-			</RefreshControl>
+			<ProgressWrapper style={styles.progressContainer} loading={refreshing&&!datas}>
+				<RefreshControl style={styles.container} refreshing={refreshing}
+					onRefresh={onRefresh} colors={['white', 'white', 'white']}
+	        progressBackgroundColor={'aquamarine'}>
+					<ListView dataSource={this.state.dataSource}
+						onEndReached={() => !loading&&onLoadMore()}
+						onEndReachedThreshold={50}
+						renderFooter={() => loading&&<ListLoadingItem/>}
+						{...props}/>
+				</RefreshControl>
+			</ProgressWrapper>
 		);
 	}
 	onListDataChanged(datas = []) {
@@ -42,7 +46,6 @@ DragableList.propTypes = {
 	datas: PropTypes.arrayOf(PropTypes.object).isRequired,
 	refreshing: PropTypes.bool,
 	loading: PropTypes.bool,
-	renderRow: PropTypes.func.isRequired,
 	onLoadMore: PropTypes.func,
 	onRefresh: PropTypes.func
 };
@@ -51,8 +54,9 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1
 	},
-	listView: {
-		flex: 1
+	progressContainer: {
+		justifyContent: 'flex-start',
+		paddingTop: 50
 	}
 });
 

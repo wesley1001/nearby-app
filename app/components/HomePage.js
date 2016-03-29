@@ -1,59 +1,63 @@
-import React, { Component, StyleSheet, PropTypes } from 'react-native';
-import { Page, ActionBar, IconSelectBar, IconButton, SlideTabViewPager } from '../widgets';
-import { LoadingViewContainer, ShopListContainer, OrderListContainer } from '../containers';
+import React, { Component, StyleSheet, PropTypes, Navigator, View } from 'react-native';
+import { Page, ActionBar, IconSelectBar, Icon, IconButton, SlideTabViewPager } from '../widgets';
+import { MainPageSelectMenu, AccountSettingContainer } from '../containers';
+import OrderList from './OrderList';
+import DeliverList from './DeliverList';
+import ShopList from './ShopList';
 
 class HomePage extends Component {
-	onSelectMenu(index) {
-		this.props.navigate(index);
+	constructor(props) {
+		super(props);
+		this.state = { selectKey: 'shops' };
+	}
+	onMenuSelect(selectKey) {
+		this.refs.navigator.jumpTo(selectKey);
+		this.setState({selectKey});
 	}
 	render() {
 		return (
 			<Page>
-				<ActionBar leftNode={
-					<IconSelectBar icons={['assignment', 'shopping-basket', 'account-circle']}
-						select={this.props.select} onSelect={this.onSelectMenu.bind(this)}/>
-				} rightNode={<IconButton src='power-settings-new'/>}/>
-				{this.renderSection()}
+				<ActionBar
+					leftNode={<MainPageSelectMenu selectKey={this.state.selectKey}
+						onSelect={this.onMenuSelect.bind(this)}/>}
+					rightNode={<IconButton src='power-settings-new'/>}/>
+				<Navigator style={styles.container} ref='navigator' initialRouteStack={['orders', 'shops', 'account']}
+					initialRoute='shops' renderScene={this.renderScene.bind(this)}/>
 			</Page>
 		);
 	}
-	renderSection() {
-		switch(this.props.select) {
-			case 0:
+	renderScene(route, navigator) {
+		switch(route) {
+			case 'orders':
 				return (
 					<SlideTabViewPager mode='text' tabs={['ORDERED', 'DELIVERED']}
 						onBindPager={(index) => {
 							if (index === 0) {
-								return (
-									<LoadingViewContainer stateKey='orders' loadingKey='refreshing'>
-										<OrderListContainer stateKey='orders'/>
-									</LoadingViewContainer>
-								);
+								return <OrderList/>;
 							} else {
-								return (
-									<LoadingViewContainer stateKey='delivers' loadingKey='refreshing'>
-										<OrderListContainer stateKey='delivers'/>
-									</LoadingViewContainer>
-								);
+								return <DeliverList/>;
 							}
 						}}/>
 				);
-			case 1:
+			case 'shops':
+				return <ShopList/>;
+			case 'account':
 				return (
-					<LoadingViewContainer stateKey='shops' loadingKey='refreshing'>
-						<ShopListContainer/>
-					</LoadingViewContainer>
+					<AccountSettingContainer onOpenRating={() => this.props.navigator.push({name: 'rating'})}
+						onOpenNotification={() => this.props.navigator.push({name: 'notification'})}/>
 				);
-			case 2:
-				return null;
 		}
 	}
 }
 
 HomePage.propTypes = {
-	navigator: PropTypes.object.isRequired,
-	navigate: PropTypes.func.isRequired,
-	select: PropTypes.number.isRequired
+	navigator: PropTypes.object.isRequired
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1
+	}
+});
 
 export default HomePage;
