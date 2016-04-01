@@ -14,21 +14,21 @@ class ScrollHeaderPage extends Component {
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 	}
 	render() {
-		const { children, title, headerHeight, onBack } = this.props;
-		const { showHeader } = this.state;
+		const { style, children, title, headerHeight, onBack } = this.props;
+		const { headerPos } = this.state;
 
 		return (
-			<Page translucent={true}>
+			<Page style={style}>
 				<View style={styles.container}>
 					<ScrollView style={styles.scrollContainer} scrollEventThrottle={8}
 						onScroll={this.onScrollChange.bind(this)}>
 						{children}
 					</ScrollView>
-					<Card style={[styles.headerBar, {height: headerHeight, top: this.state.headerPos}]}
-						backgroundColor={THEME_COLOR} elevation={4}>
+					<Card style={[styles.headerBar, {height: headerHeight, top: headerPos}]} elevation={6}>
 						<IconButton src='chevron-left' size='normal' onPress={onBack}/>
 						<TitleText>{title}</TitleText>
 					</Card>
+					{(headerPos<0)&&<IconButton style={styles.backBtn} src='chevron-left' size='normal' onPress={onBack}/>}
 				</View>
 			</Page>
 		);
@@ -73,7 +73,8 @@ const styles = StyleSheet.create({
 		paddingTop: 24,
 		flexDirection: 'row',
 		alignItems: 'center',
-		paddingHorizontal: 16
+		paddingHorizontal: 16,
+		backgroundColor: THEME_COLOR
 	},
 	backBtn: {
 		position: 'absolute',

@@ -1,11 +1,11 @@
-import React, { Component, StyleSheet, View, Navigator, BackAndroid } from 'react-native';
-import { RatingPageContainer, NotificationPageContainer,
-  WatchingPageContainer, AccountDialogContainer } from '../containers';
-import { DialogPage } from '../widgets';
+import React, { Component, StyleSheet, Navigator, BackAndroid } from 'react-native';
 import HomePage from './HomePage';
-import ShopPage from './ShopPage';
+import RatingPage from './RatingPage';
+import NotificationPage from './NotificationPage';
+import ShopDetailPage from './ShopDetailPage';
 import MakeOrderPage from './MakeOrderPage';
 import WidgetsDemo from '../widgets/WidgetsDemo';
+import TESTPAGE from './TESTPAGE';
 
 class AppNavigator extends Component {
   componentDidMount() {
@@ -20,26 +20,25 @@ class AppNavigator extends Component {
   }
 	render() {
 		return (
-      <Navigator style={styles.container} ref='navigator' initialRoute={{name: 'home11'}}
+      <Navigator style={styles.container} ref='navigator' initialRoute={{name: 'homeaa'}}
         renderScene={this.renderScene.bind(this)}/>
 		);
 	}
   renderScene(route, navigator) {
     switch(route.name) {
       case 'home':
-        return <HomePage navigator={navigator}/>;
+        return <HomePage
+          openShopPage={(shop) => navigator.push({name: 'shop', data: shop})}
+          openRatingPage={() => navigator.push({name: 'rating'})}
+          openNotificationPage={() => navigator.push({name: 'notification'})}/>;
       case 'shop':
-        return <ShopPage {...route.data} onBack={this.onBackPassed.bind(this)}/>;
+        return <ShopDetailPage {...route.data} onBack={this.onBackPassed.bind(this)}/>;
       case 'rating':
-        return <RatingPageContainer title='My Ratings' onBack={this.onBackPassed.bind(this)}/>;
+        return <RatingPage onBack={this.onBackPassed.bind(this)}/>;
       case 'notification':
-        return <MakeOrderPage onBack={this.onBackPassed.bind(this)}/>;
+        return <NotificationPage onBack={this.onBackPassed.bind(this)}/>;
       default:
-        return (
-          <DialogPage>
-            <AccountDialogContainer/>
-          </DialogPage>
-        );
+        return <TESTPAGE/>;
     }
   }
 }

@@ -1,19 +1,19 @@
 import runAction from './runAction';
 
-export const DELIVERED_COLLECTION_LOAD = 'DELIVERED_COLLECTION_LOAD';
+export const DELIVERER_COLLECTION_LOAD = 'DELIVERER_COLLECTION_LOAD';
 
-export function loadDelivers(size) {
+export function loadDeliverers(size) {
 	return (dispatch, getState) => {
-		const { appState, delivers } = getState();
+		const { appState, deliverers } = getState();
 
 		runAction({
 			dispatch,
 			token: appState.token,
 			params: {
 				size: size||appState.listFetchSize,
-				offset: delivers.offset
+				offset: deliverers.offset
 			},
-			actionName: DELIVERED_COLLECTION_LOAD,
+			actionName: DELIVERER_COLLECTION_LOAD,
 			urlPath: 'users/orders/delivered'
 		});
 	};
