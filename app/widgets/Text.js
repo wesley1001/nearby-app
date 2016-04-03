@@ -1,33 +1,54 @@
-import React, { PropTypes, StyleSheet, Text } from 'react-native';
-import { SIZES, S_COLORS } from './theme';
+import React, { PropTypes, StyleSheet, Text as ReactText } from 'react-native';
+import { THEME_COLOR } from './theme';
 
-let TextWrapper = ({children, size, color}) => (
-	<Text style={[styles[size], S_COLORS[color]]}>{children}</Text>
+let Text = ({children, wSize, wMode, align, paragraph, style, ...props}) => (
+	<ReactText style={[styles[wSize], styles[wMode], styles[align], paragraph&&styles.paragraph, style]} {...props}>
+		{children}
+	</ReactText>
 );
 
-TextWrapper.propTypes = {
-	size: PropTypes.oneOf(SIZES),
-	color: PropTypes.string
+Text.propTypes = {
+	wSize: PropTypes.oneOf(['lg', 'md', 'sm', 'xs']),
+	wMode: PropTypes.string,
+	paragraph: PropTypes.bool
 };
 
-TextWrapper.defaultProps = {
-	size: SIZES[2]
+Text.defaultProps = {
+	wSize: 'md'
 };
 
 const styles = StyleSheet.create({
+	center: {
+		textAlign: 'center'
+	},
+	primary: {
+		color: THEME_COLOR
+	},
+	link: {
+		color: THEME_COLOR
+	},
+	sub: {
+		color: 'gray'
+	},
+	lite: {
+		color: 'white'
+	},
+	paragraph: {
+		padding: 12
+	},
 	lg: {
-		fontSize: 22
+		fontSize: 24
 	},
 	md: {
 		fontSize: 18
 	},
 	sm: {
-		fontSize: 14
+		fontSize: 16
 	},
 	xs: {
-		fontSize: 10
+		fontSize: 14
 	}
 });
 
-export default TextWrapper;
+export default Text;
 
